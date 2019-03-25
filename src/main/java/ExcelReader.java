@@ -28,27 +28,43 @@ public class ExcelReader {
         int daysOfJuly = 31;
         boolean correctpos = false;
 
-
+        int rowI=0;
+        int colI=0;
 
         for (Row row : sheet) {
+            rowI++;
             for (Cell cell : row) {
+                colI++;
+
                 if(cell.getStringCellValue().equals("24")){
                     correctpos = true;
                     System.out.println("MY BOY");
                 }
-                if(correctpos) {
+                if(correctpos && rowI>2 && colI >1 && colI < 9) {
+                    String str = cell.getStringCellValue();
 
-
-
-
-
-
-
-
+                    if(str.contains(":")) {
+                        getTimes(str);
+                    }
+                    System.out.println(cell.getStringCellValue() + " day: " + day + ". Month: " + month);
+                    day++;
 
                 }
+                if(day == daysOfJuly && month == 6) {
+                    month = 7;
+                    day = 1;
+                }
+                else if(day == daysOfJuny && month == 7) {
+                    month = 8;
+                    day =1;
+                }
+
+
+
 
             }
+            System.out.println("--- new Week ---");
+            colI = 0;
         }
 
 
@@ -110,5 +126,39 @@ public class ExcelReader {
 
         workbook.close();
     */
+    }
+
+    public static int [] getTimes(String str) {
+        String start;
+        String end;
+
+        start = str.substring(0,5);
+        end = str.substring(6);
+
+        int starthour;
+        int startmin;
+        int endhour;
+        int endmin;
+
+        starthour=Integer.valueOf(start.substring(0,2));
+        startmin=Integer.valueOf(start.substring(3,5));
+
+
+        endhour=Integer.valueOf(end.substring(0,2));
+        endmin=Integer.valueOf(end.substring(3,5));
+
+        /*
+        System.out.print(starthour + ":");
+        System.out.println(startmin);
+
+        System.out.print(endhour + ":");
+        System.out.println(endmin);
+
+        */
+
+
+        int [] p = {starthour,startmin,endhour,endmin};
+
+        return p;
     }
 }
