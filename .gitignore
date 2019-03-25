@@ -3,3 +3,6 @@ target/
 .iml
 .ics
 .idea/
+.idea/workspace.xml
+target/classes/CalenderWriter.class
+meeting.ics
