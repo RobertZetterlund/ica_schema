@@ -70,16 +70,12 @@ public class CalenderWriter {
 
         // add the meeting
         icsCalendar.getComponents().add(meeting);
-
-        // set version (mandatory)
         icsCalendar.getProperties().add(Version.VERSION_2_0);
 
         // generate a file that can be emailed
         FileOutputStream fout = new FileOutputStream("meeting.ics");
         CalendarOutputter outputter = new CalendarOutputter();
         outputter.output(icsCalendar, fout);
-
         fout.close();
-
     }
 }
