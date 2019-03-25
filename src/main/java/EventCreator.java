@@ -1,7 +1,7 @@
 import java.util.GregorianCalendar;
 
 public class EventCreator {
-    public java.util.Calendar [] startTime(int day, int month, int starthour, int startminute, int endhour, int endminute) {
+    public java.util.Calendar [] getTimes(int day, int month, int starthour, int startminute, int endhour, int endminute) {
         java.util.Calendar startDate = new GregorianCalendar();
         java.util.Calendar endDate = new GregorianCalendar();
 
