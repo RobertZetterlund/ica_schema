@@ -1,4 +1,4 @@
-target/
+target/*
 *.class
 .iml
 .ics
@@ -6,3 +6,4 @@ target/
 .idea/workspace.xml
 target/classes/CalenderWriter.class
 meeting.ics
+target

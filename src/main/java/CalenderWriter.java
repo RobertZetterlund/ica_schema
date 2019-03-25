@@ -30,24 +30,11 @@ public class CalenderWriter {
 
 
         // Start at april 5 2019 at 06:00
-        java.util.Calendar startDate = new GregorianCalendar();
-        startDate.setTimeZone(timezone);
-        startDate.set(java.util.Calendar.MONTH, java.util.Calendar.APRIL);
-        startDate.set(java.util.Calendar.DAY_OF_MONTH, 5);
-        startDate.set(java.util.Calendar.YEAR, 2019);
-        startDate.set(java.util.Calendar.HOUR_OF_DAY, 6);
-        startDate.set(java.util.Calendar.MINUTE, 0);
-        startDate.set(java.util.Calendar.SECOND, 0);
+        java.util.Calendar startDate = startTime(timezone);
 
         // End at april 5 2019 at 14:45
-        java.util.Calendar endDate = new GregorianCalendar();
-        endDate.setTimeZone(timezone);
-        endDate.set(java.util.Calendar.MONTH, java.util.Calendar.APRIL);
-        endDate.set(java.util.Calendar.DAY_OF_MONTH, 5);
-        endDate.set(java.util.Calendar.YEAR, 2019);
-        endDate.set(java.util.Calendar.HOUR_OF_DAY, 14);
-        endDate.set(java.util.Calendar.MINUTE, 45);
-        endDate.set(java.util.Calendar.SECOND, 0);
+        java.util.Calendar endDate = endTime(timezone);
+
 
         // Create the event
         String eventName = "Ica Jobb";
@@ -55,11 +42,11 @@ public class CalenderWriter {
         DateTime end = new DateTime(endDate.getTime());
         VEvent meeting = new VEvent(start, end, eventName);
 
-        // add timezone info..
+        // add timezone info... (even though the events are based on it)
         meeting.getProperties().add(tz.getTimeZoneId());
 
         // generate unique identifier..
-
+        // TODO: hash this?
         FixedUidGenerator ug = new FixedUidGenerator("6");
         meeting.getProperties().add(ug.generateUid());
 
@@ -76,6 +63,34 @@ public class CalenderWriter {
         FileOutputStream fout = new FileOutputStream("meeting.ics");
         CalendarOutputter outputter = new CalendarOutputter();
         outputter.output(icsCalendar, fout);
-        fout.close();
     }
+
+    // Start at april 5 2019 at 06:00
+    public static java.util.Calendar startTime(java.util.TimeZone tz) {
+        java.util.Calendar startDate = new GregorianCalendar();
+        startDate.setTimeZone(tz);
+        startDate.set(java.util.Calendar.MONTH, java.util.Calendar.APRIL);
+        startDate.set(java.util.Calendar.DAY_OF_MONTH, 5);
+        startDate.set(java.util.Calendar.YEAR, 2019);
+        startDate.set(java.util.Calendar.HOUR_OF_DAY, 6);
+        startDate.set(java.util.Calendar.MINUTE, 0);
+        startDate.set(java.util.Calendar.SECOND, 0);
+
+        return startDate;
+    }
+    // End at april 5 2019 at 14:45
+
+    public static java.util.Calendar endTime(java.util.TimeZone tz) {
+        java.util.Calendar endDate = new GregorianCalendar();
+        endDate.setTimeZone(tz);
+        endDate.set(java.util.Calendar.MONTH, java.util.Calendar.APRIL);
+        endDate.set(java.util.Calendar.DAY_OF_MONTH, 5);
+        endDate.set(java.util.Calendar.YEAR, 2019);
+        endDate.set(java.util.Calendar.HOUR_OF_DAY, 14);
+        endDate.set(java.util.Calendar.MINUTE, 45);
+        endDate.set(java.util.Calendar.SECOND, 0);
+
+        return endDate;
+    }
+
 }
