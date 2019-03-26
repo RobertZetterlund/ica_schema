@@ -7,13 +7,56 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.FixedUidGenerator;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
+
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 public class CalenderWriter {
 
-    public static void main(String[] args) throws IOException {
+    final public String eventName = "Ica Jobb";
+    ArrayList<VEvent> eventlist= new ArrayList<VEvent>();
+
+    public static boolean dostuff = true;
+
+    TimeZoneRegistry registry;
+    TimeZone timezone;
+    VTimeZone tz;
+
+
+    public void eventCreator(java.util.Calendar[] events) throws FileNotFoundException, SocketException {
+
+        if(dostuff) {
+            System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
+            registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+            timezone = registry.getTimeZone("Europe/Oslo");
+            tz = timezone.getVTimeZone();
+            dostuff = false;
+        }
+
+        System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
+
+        events[0].setTimeZone(timezone);
+        events[1].setTimeZone(timezone);
+
+
+        DateTime start = new DateTime(events[0].getTime());
+        DateTime end = new DateTime(events[1].getTime());
+        VEvent workpass = new VEvent(start, end, eventName);
+        workpass.getProperties().add(tz.getTimeZoneId());
+
+        FixedUidGenerator ug = new FixedUidGenerator(Integer.toString(events.hashCode()));
+        workpass.getProperties().add(ug.generateUid());
+
+        eventlist.add(workpass);
+        System.out.println(eventlist.size());
+    }
+
+
+    public void CreateCalender() throws IOException {
 
 
         System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
@@ -37,7 +80,6 @@ public class CalenderWriter {
 
 
         // Create the event
-        String eventName = "Ica Jobb";
         DateTime start = new DateTime(startDate.getTime());
         DateTime end = new DateTime(endDate.getTime());
         VEvent meeting = new VEvent(start, end, eventName);
@@ -61,6 +103,26 @@ public class CalenderWriter {
 
         // generate a file that can be emailed
         FileOutputStream fout = new FileOutputStream("meeting.ics");
+        CalendarOutputter outputter = new CalendarOutputter();
+        outputter.output(icsCalendar, fout);
+    }
+
+    public void WriteToFile() throws IOException {
+        net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
+        icsCalendar.getProperties().add(new ProdId("-//Ica Schema Rz//"));
+        icsCalendar.getProperties().add(CalScale.GREGORIAN);
+
+        // add the events
+
+        for(VEvent vE : eventlist) {
+            icsCalendar.getComponents().add(vE);
+        }
+
+
+        icsCalendar.getProperties().add(Version.VERSION_2_0);
+
+        // generate a file that can be emailed
+        FileOutputStream fout = new FileOutputStream("sommarschema.ics");
         CalendarOutputter outputter = new CalendarOutputter();
         outputter.output(icsCalendar, fout);
     }

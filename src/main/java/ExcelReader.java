@@ -2,16 +2,24 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.Month;
+import java.net.SocketException;
+import java.util.ArrayList;
 
 public class ExcelReader {
     public static final String schema_w = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_sommar.xls";
     public static final String schema_s = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_vinter.xls";
 
+    public EventCreator eC = new EventCreator();
+    public CalenderWriter cW = new CalenderWriter();
+
     public static void main(String[] args) throws IOException, InvalidFormatException {
+        ExcelReader eR = new ExcelReader();
+        eR.app();
+    }
 
-
+    public void app() throws IOException, InvalidFormatException {
         // Creating a Workbook from an Excel file (.xls)
         Workbook workbook = WorkbookFactory.create(new File(schema_w));
 
@@ -19,10 +27,13 @@ public class ExcelReader {
         Sheet sheet = workbook.getSheetAt(0);
 
         // for-each loop to iterate over the rows and columns
-        int day = 10;
-        int week = 24;
-        int month = 6;
-        int year = 2019;
+
+
+        int day = 10; // Dagen då sommarschemat börjar
+        int week = 24; // Veckan då sommarschemat börjar
+        String strweek = "24";
+        int month = 6; // Månaden då sommarschemat börjar
+        int year = 2019; // Året sommarschemat börjar
 
         int daysOfJuny = 30;
         int daysOfJuly = 31;
@@ -30,52 +41,46 @@ public class ExcelReader {
 
         int rowI=0;
         int colI=0;
+        int [] eventtime;
+
+        ArrayList<int []> eventTimes = new ArrayList<>();
 
         for (Row row : sheet) {
             rowI++;
             for (Cell cell : row) {
                 colI++;
 
-                if(cell.getStringCellValue().equals("24")){
+                if(!correctpos && cell.getStringCellValue().equals(strweek)){
                     correctpos = true;
-                    System.out.println("MY BOY");
                 }
                 if(correctpos && rowI>2 && colI >1 && colI < 9) {
                     String str = cell.getStringCellValue();
 
                     if(str.contains(":")) {
-                        getTimes(str);
+                        eventtime = getTimes(str);
+                        createEvent(eventtime, day, month,year);
                     }
+
                     System.out.println(cell.getStringCellValue() + " day: " + day + ". Month: " + month);
+
                     day++;
 
                 }
-                if(day == daysOfJuly && month == 6) {
+                if(day == daysOfJuly+1 && month == 6) {
                     month = 7;
                     day = 1;
                 }
-                else if(day == daysOfJuny && month == 7) {
+                else if(day == daysOfJuny+1 && month == 7) {
                     month = 8;
-                    day =1;
+                    day = 1;
                 }
-
-
-
 
             }
             System.out.println("--- new Week ---");
             colI = 0;
         }
 
-
-
-
-
-
-
-
-
-
+        cW.WriteToFile();
 
 
         /*
@@ -128,7 +133,14 @@ public class ExcelReader {
     */
     }
 
-    public static int [] getTimes(String str) {
+
+    // TODO: maybe not create a useless wrapper...
+    // TODO: next up is connecting creation of events to the calenderwriter.
+    private void createEvent(int[] times, int day, int month, int year) throws FileNotFoundException, SocketException {
+        cW.eventCreator(eC.getTimes(day,month, times[0],times[1],times[2],times[3]));
+    }
+
+    private int [] getTimes(String str) {
         String start;
         String end;
 
