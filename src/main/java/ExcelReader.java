@@ -2,7 +2,6 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketException;
 
@@ -11,23 +10,21 @@ public class ExcelReader {
     // ----------------------------- START ADJUSTABLES ----------------------------- //
     private static final String schema_s = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_sommar.xls";
     private static final String schema_w = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_vinter.xls";
+    private static final String schema_m = "/Users/robertzetterlund/ica_schema/src/main/resources/31706_sommar.xls";
 
-    public static final String id = "6781";
 
-    int day = 10; // Dagen då sommarschemat börjar
-    int month = 6; // Månaden då sommarschemat börjar
-    int year = 2019; // Året sommarschemat börjar
+    private int day = 10; // Dagen då sommarschemat börjar
+    private int month = 6; // Månaden då sommarschemat börjar
+    private int year = 2019; // Året sommarschemat börjar
 
-    int daysOfJuny = 30;
-    int daysOfJuly = 31;
+    private int daysOfJuny = 30;
+    private int daysOfJuly = 31;
     // -----------------------------  END ADJUSTABLES  ----------------------------- //
 
 
-
-
-    int rowI = 0;
-    int colI = 0;
-    int[] eventTimes;
+    static String id = "notfound";
+    private int rowI = 0;
+    private int colI = 0;
     private EventCreator eC = new EventCreator();
     private CalendarWriter cW = new CalendarWriter();
 
@@ -37,47 +34,63 @@ public class ExcelReader {
     }
 
     public void app() throws IOException, InvalidFormatException {
+
+        int[] eventTimes;
+
         // Creating a Workbook from an Excel file (.xls)
-        Workbook workbook = WorkbookFactory.create(new File(schema_s));
+        Workbook workbook = WorkbookFactory.create(new File(schema_m));
 
         // Retrieving the sheet in the Workbook
         Sheet sheet = workbook.getSheetAt(0);
 
-
-
         // for-each loop to iterate over the rows and columns
         for (Row row : sheet) {
             rowI++;
-            if(rowI>2) { // we start at row 2
                 for (Cell cell : row) {
                     colI++;
-                    if (colI > 1 && colI < 9) { // between column-indices 1 and 9 lies the data, monday through sunday.
-                        String str = cell.getStringCellValue();
+                    if (colI == 1 && rowI == 1) {
+                         id = extractId(cell.getStringCellValue());
+                    }
+                    if (rowI > 2) {
+                        if (colI > 1 && colI < 9) { // between column-indices 1 and 9 lies the data, monday through sunday.
+                            String str = cell.getStringCellValue();
 
-                        if (str.contains(":")) { // time is formatted as XX:xx-YY:yy.
-                            eventTimes = ParseTimesIntoIntArray(str);
-                            createEvent(eventTimes, day, month, year);
+                            if (str.contains(":") && rowI > 2) { // time is formatted as XX:xx-YY:yy.
+                                eventTimes = ParseTimesIntoIntArray(str);
+                                createEvent(eventTimes, day, month, year);
+                            }
+
+                            System.out.println(cell.getStringCellValue() + " day: " + day + ". Month: " + month);
+                            day++;
                         }
-
-                        System.out.println(cell.getStringCellValue() + " day: " + day + ". Month: " + month);
-
-                        day++;
+                        if (day == daysOfJuly + 1 && month == 6) {
+                            month = 7;
+                            day = 1;
+                        } else if (day == daysOfJuny + 1 && month == 7) {
+                            month = 8;
+                            day = 1;
+                        }
                     }
-                    if (day == daysOfJuly + 1 && month == 6) {
-                        month = 7;
-                        day = 1;
-                    } else if (day == daysOfJuny + 1 && month == 7) {
-                        month = 8;
-                        day = 1;
-                    }
-
                 }
                 System.out.println("--- new Week ---");
                 colI = 0;
-            }
         }
         cW.WriteToFile();
+    }
 
+    /**
+     * Extracts the id from the file so that the naming of the file is automatically fixed.
+     * @param idString the string containing the id of the employee
+     * @return the id of the employee
+     */
+    private String extractId(String idString) {
+        String temp = idString.substring(12);
+        int i=0;
+
+        while(Character.isDigit(temp.charAt(i))) {
+            i++;
+        }
+        return idString.substring(12,12+i);
     }
 
     /**
@@ -86,10 +99,9 @@ public class ExcelReader {
      * @param day the day the event should be created on, from 1-31.
      * @param month the month the event should be created on.
      * @param year the year the event should be created on (currently unused).
-     * @throws FileNotFoundException
      * @throws SocketException
      */
-    private void createEvent(int[] times, int day, int month, int year) throws FileNotFoundException, SocketException {
+    private void createEvent(int[] times, int day, int month, int year) throws SocketException {
         cW.eventCreator(eC.getTimes(day,month, times[0],times[1],times[2],times[3]));
     }
 

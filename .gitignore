@@ -1,7 +1,7 @@
 target/*
 *.class
 .iml
-*.ics
 .idea/*
-*.xls
+meeting.ics
 redacted.java
+6781_vinter.xls
