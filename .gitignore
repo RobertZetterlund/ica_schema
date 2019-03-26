@@ -1,9 +1,6 @@
 target/*
 *.class
 .iml
-.ics
-.idea/
-.idea/workspace.xml
-target/classes/CalenderWriter.class
-meeting.ics
-target
+*.ics
+.idea/*
+*.xls
