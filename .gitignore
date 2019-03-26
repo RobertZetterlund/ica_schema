@@ -4,3 +4,4 @@ target/*
 *.ics
 .idea/*
 *.xls
+redacted.java

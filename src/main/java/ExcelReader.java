@@ -29,7 +29,7 @@ public class ExcelReader {
     int colI = 0;
     int[] eventTimes;
     private EventCreator eC = new EventCreator();
-    private CalenderWriter cW = new CalenderWriter();
+    private CalendarWriter cW = new CalendarWriter();
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
         ExcelReader eR = new ExcelReader();
