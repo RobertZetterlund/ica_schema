@@ -7,7 +7,7 @@ Apache POI and iCal4j.
 ## The excel File
 ![Screenshot 2019-03-26 at 11 47 57](https://user-images.githubusercontent.com/31474146/54991342-07377900-4fbd-11e9-8a90-5af7c3dfe2e0.png)
 
-As spotted, the days that you are working are determined by the week and weekday. I found this frustrating and when I started translating week and day into my calendar on my cellphone I decided to do automate the process and help coworkers escape from this tedious process. 
+The days that you are working are determined by the week and weekday, meaning week 24 and monday needs to be manually translated to an actual day. I found this frustrating so I decided to automate the process to help myself and coworkers escape this tedious process. 
 
 ### Apoache POI
 https://poi.apache.org/
