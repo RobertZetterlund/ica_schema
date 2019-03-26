@@ -4,6 +4,7 @@ public class EventCreator {
     java.util.Calendar startDate = new GregorianCalendar();
     java.util.Calendar endDate = new GregorianCalendar();
 
+
     public java.util.Calendar [] getTimes(int day, int month, int starthour, int startminute, int endhour, int endminute) {
 
         startDate.set(java.util.Calendar.MONTH, month-1); // TODO: know why this happens, is month from 0 or 1?
