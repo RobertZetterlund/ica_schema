@@ -75,7 +75,7 @@ public class CalendarWriter {
         icsCalendar.getProperties().add(Version.VERSION_2_0);
 
         // generate a file that can be emailed using the globally available id in excelreader
-        FileOutputStream fout = new FileOutputStream("sommarschema_" + ExcelReader.id + ".ics" );
+        FileOutputStream fout = new FileOutputStream(ExcelReader.id + "_sommarschema.ics" );
         CalendarOutputter outputter = new CalendarOutputter();
         outputter.output(icsCalendar, fout);
     }

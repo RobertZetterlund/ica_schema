@@ -8,7 +8,7 @@ import java.net.SocketException;
 public class ExcelReader {
 
     // ----------------------------- START ADJUSTABLES ----------------------------- //
-    private static final String schema_s = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_sommar.xls";
+    private static final String schema_r = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_sommar.xls";
     private static final String schema_w = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_vinter.xls";
     private static final String schema_m = "/Users/robertzetterlund/ica_schema/src/main/resources/31706_sommar.xls";
 
@@ -38,7 +38,7 @@ public class ExcelReader {
         int[] eventTimes;
 
         // Creating a Workbook from an Excel file (.xls)
-        Workbook workbook = WorkbookFactory.create(new File(schema_m));
+        Workbook workbook = WorkbookFactory.create(new File(schema_r));
 
         // Retrieving the sheet in the Workbook
         Sheet sheet = workbook.getSheetAt(0);
@@ -63,10 +63,10 @@ public class ExcelReader {
                             System.out.println(cell.getStringCellValue() + " day: " + day + ". Month: " + month);
                             day++;
                         }
-                        if (day == daysOfJuly + 1 && month == 6) {
+                        if (day == daysOfJuny + 1 && month == 6) {
                             month = 7;
                             day = 1;
-                        } else if (day == daysOfJuny + 1 && month == 7) {
+                        } else if (day == daysOfJuly + 1 && month == 7) {
                             month = 8;
                             day = 1;
                         }
