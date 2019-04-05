@@ -12,14 +12,6 @@ public class ExcelReader {
 
     // -----------------------------  END ADJUSTABLES  ----------------------------- //
 
-
-    private String cellValue;
-
-    /**
-     * this boolean determines whether or not an event should be created. evaluates on dates where times are found.
-     */
-    private Boolean working = false;
-
     /**
      * id which workers have, used in name of created file. will be changed when it is able to read from schema.
      */
@@ -37,6 +29,13 @@ public class ExcelReader {
     }
 
     public void app() throws IOException, InvalidFormatException {
+
+        String cellValue;
+
+        // determines whether or not an event should be created. evaluates on dates where times are found.
+        boolean working = false;
+
+
         int[] eventTimes;
         Workbook workbook = WorkbookFactory.create(new File(schema_2019));
 
@@ -105,7 +104,6 @@ public class ExcelReader {
 
     /**
      * Gives the work done to CalendarWriter, which creates a event and stores.
-     * @throws SocketException
      */
     private void createEvent(WorkDay workDay) throws SocketException {
 

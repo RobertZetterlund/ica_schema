@@ -24,6 +24,11 @@ public class CalendarWriter {
     private TimeZone timezone;
     private VTimeZone tz;
 
+    /**
+     * Creates a event and adds them to ArrayList<VEvent>.
+     * @param events changes from two of Javas Calendars into one VEvent
+     * @param time attached to have name of events display which times the event covers.
+     */
     public void eventCreator(java.util.Calendar[] events, String time) throws SocketException {
 
         if(init) {
@@ -66,7 +71,6 @@ public class CalendarWriter {
     /**
      * This function is called at the end of the process at the bottom of Dated_ExcelReader.
      * It uses the eventList that has been created and uses a CalendarOutputter to create the file sommarchema.ics
-     * @throws IOException
      */
     public void WriteToFile() throws IOException {
         net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
