@@ -104,7 +104,7 @@ public class Dated_ExcelReader {
      * @throws SocketException
      */
     private void createEvent(int[] times, int day, int month, int year) throws SocketException {
-        cW.eventCreator(eC.getTimes(day,month, times[0],times[1],times[2],times[3]));
+        cW.eventCreator(eC.getTimes(day,month, times[0],times[1],times[2],times[3]), "");
     }
 
 

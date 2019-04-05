@@ -108,7 +108,37 @@ public class ExcelReader {
      * @throws SocketException
      */
     private void createEvent(WorkDay workDay) throws SocketException {
-        cW.eventCreator(eC.getTimes(workDay));
+
+        String time = formatTime(workDay);
+
+        cW.eventCreator(eC.getTimes(workDay),time);
+    }
+
+
+    /**
+     * Some serious reverse-engineering. Take int values and make them into string as a digital clock would present them.
+     * @param workDay information about time, in ints.
+     * @return a string of worktimes.
+     */
+    private String formatTime (WorkDay workDay) {
+
+        StringBuilder time = new StringBuilder();
+
+        time.append((workDay.startTimeHour < 10 ? "0" : ""));
+        time.append(workDay.startTimeHour);
+        time.append(":");
+        time.append((workDay.startTimeMin < 10 ? "0" : ""));
+        time.append(workDay.startTimeMin);
+
+        time.append(" - ");
+
+        time.append((workDay.endTimeHour < 10 ? "0" : ""));
+        time.append(workDay.endTimeHour);
+        time.append(":");
+        time.append((workDay.endTimeMin < 10 ? "0" : ""));
+        time.append(workDay.endTimeMin);
+
+        return time.toString();
     }
 
 

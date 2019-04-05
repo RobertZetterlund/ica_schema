@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class CalendarWriter {
 
-    final public String eventName = "Ica Jobb";
     private ArrayList<VEvent> eventlist= new ArrayList<>();
 
     private static boolean init = true;
@@ -25,7 +24,7 @@ public class CalendarWriter {
     private TimeZone timezone;
     private VTimeZone tz;
 
-    public void eventCreator(java.util.Calendar[] events) throws SocketException {
+    public void eventCreator(java.util.Calendar[] events, String time) throws SocketException {
 
         if(init) {
             System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
@@ -37,13 +36,22 @@ public class CalendarWriter {
             init = false;
         }
 
+        StringBuilder eventName =  new StringBuilder();
+
+        eventName.append("Ica Jobb ");
+
+        eventName.append(time);
+        System.out.println(eventName);
+
         events[0].setTimeZone(timezone);
         events[1].setTimeZone(timezone);
+
+
 
         // Create the events
         DateTime start = new DateTime(events[0].getTime());
         DateTime end = new DateTime(events[1].getTime());
-        VEvent workpass = new VEvent(start, end, eventName);
+        VEvent workpass = new VEvent(start, end, eventName.toString());
         workpass.getProperties().add(tz.getTimeZoneId());
 
         // Generate unique id
@@ -75,7 +83,7 @@ public class CalendarWriter {
         icsCalendar.getProperties().add(Version.VERSION_2_0);
 
         // generate a file that can be emailed using the globally available id in excelreader
-        FileOutputStream fout = new FileOutputStream("Examples/ " + ExcelReader.id + "_sommarschema.ics" );
+        FileOutputStream fout = new FileOutputStream("Examples/" + ExcelReader.id + "_sommarschema.ics" );
         CalendarOutputter outputter = new CalendarOutputter();
         outputter.output(icsCalendar, fout);
     }
