@@ -5,6 +5,16 @@ public class EventCreator {
     java.util.Calendar endDate = new GregorianCalendar();
 
 
+    /**
+     * For the outdated 2018 schema-format
+     * @param day
+     * @param month
+     * @param starthour
+     * @param startminute
+     * @param endhour
+     * @param endminute
+     * @return
+     */
     public java.util.Calendar [] getTimes(int day, int month, int starthour, int startminute, int endhour, int endminute) {
 
         startDate.set(java.util.Calendar.MONTH, month-1);
@@ -13,11 +23,6 @@ public class EventCreator {
         startDate.set(java.util.Calendar.HOUR_OF_DAY, starthour);
         startDate.set(java.util.Calendar.MINUTE, startminute);
         startDate.set(java.util.Calendar.SECOND, 0);
-
-       /* if(endhour < starthour) {
-            day++;
-            // also check if month, but not right now.
-        }*/
 
         endDate.set(java.util.Calendar.MONTH, month-1);
         endDate.set(java.util.Calendar.DAY_OF_MONTH, day);
@@ -31,6 +36,11 @@ public class EventCreator {
         return arr;
     }
 
+    /** For the updated 2019 schema-format,
+     *
+     * @param wD Holds Information about day, month, year, and hours.
+     * @return [startDate, endDate] two calendars.
+     */
     public java.util.Calendar [] getTimes(WorkDay wD) {
 
         boolean working_night = false;
@@ -41,7 +51,7 @@ public class EventCreator {
         startDate.set(java.util.Calendar.MINUTE, wD.startTimeMin);
         //startDate.set(java.util.Calendar.SECOND, 0);
 
-        if(wD.endTimeHour < wD.endTimeMin) {
+        if(wD.endTimeHour < wD.startTimeHour) {
             working_night = true;
         }// TODO: ALSO CHECK MONTHS, but tricky....
 

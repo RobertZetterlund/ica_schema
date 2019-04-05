@@ -8,23 +8,24 @@ import java.net.SocketException;
 public class ExcelReader {
 
     // ----------------------------- START ADJUSTABLES ----------------------------- //
-    private static final String schema_r = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_sommar.xls";
-    private static final String schema_w = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_vinter.xls";
-    private static final String schema_m = "/Users/robertzetterlund/ica_schema/src/main/resources/31706_sommar.xls";
     private static final String schema_2019 = "/Users/robertzetterlund/Projects_prog/ica_schema/src/main/resources/Schema-Testschema.xlsx";
 
-
-
-    private int day = 10; // Dagen då sommarschemat börjar
-    private int month = 6; // Månaden då sommarschemat börjar
-    private int year = 2019; // Året sommarschemat börjar
-
-    private int daysOfJuny = 30;
-    private int daysOfJuly = 31;
     // -----------------------------  END ADJUSTABLES  ----------------------------- //
 
 
-    static String id = "notfound";
+    private String cellValue;
+
+    /**
+     * this boolean determines whether or not an event should be created. evaluates on dates where times are found.
+     */
+    private Boolean working = false;
+
+    /**
+     * id which workers have, used in name of created file. will be changed when it is able to read from schema.
+     */
+    static String id = "test";
+
+
     private int rowI = 0;
     private int colI = 0;
     private EventCreator eC = new EventCreator();
@@ -36,96 +37,99 @@ public class ExcelReader {
     }
 
     public void app() throws IOException, InvalidFormatException {
-
         int[] eventTimes;
-
-        // Creating a Workbook from an Excel file (.xls)
-        Workbook workbook = WorkbookFactory.create(new File(schema_r));
+        Workbook workbook = WorkbookFactory.create(new File(schema_2019));
 
         // Retrieving the sheet in the Workbook
         Sheet sheet = workbook.getSheetAt(0);
 
-        // for-each loop to iterate over the rows and columns
+        WorkDay wD = new WorkDay();
+
         for (Row row : sheet) {
             rowI++;
+            if (rowI % 8 == 6) { //  (rowI % 8 == 6) the distance between the events are 8, and the first row of work is on index 6
                 for (Cell cell : row) {
                     colI++;
-                    if (colI == 1 && rowI == 1) {
-                         id = extractId(cell.getStringCellValue());
-                    }
-                    if (rowI > 2) {
-                        if (colI > 1 && colI < 9) { // between column-indices 1 and 9 lies the data, monday through sunday.
-                            String str = cell.getStringCellValue();
+                    cellValue = cell.getStringCellValue();
 
-                            if (str.contains(":") && rowI > 2) { // time is formatted as XX:xx-YY:yy.
-                                eventTimes = ParseTimesIntoIntArray(str);
-                                createEvent(eventTimes, day, month, year);
-                            }
+                    // the excel-fie has [time | date] and date is even and time is odd. meaning, if working AND even index, create event.
+                    if (colI % 2 == 0 && working) {
+                        if (!cell.getStringCellValue().equals("")) {
+                            int[] date = parsedate(cellValue);
+                            wD.day = date[0];
+                            wD.month = date[1];
 
-                            System.out.println(cell.getStringCellValue() + " day: " + day + ". Month: " + month);
-                            day++;
+                            System.out.println(wD.toString());
+                            createEvent(wD);
+
+                            wD = new WorkDay();
+                            working = false;
                         }
-                        if (day == daysOfJuny + 1 && month == 6) {
-                            month = 7;
-                            day = 1;
-                        } else if (day == daysOfJuly + 1 && month == 7) {
-                            month = 8;
-                            day = 1;
+                    } else { // we search for times, ":" being a somewhat unique character is passable as a check.
+                        if (cellValue.contains(":")) {
+
+                            eventTimes = ParseTimesIntoIntArray(cellValue);
+                            // eventimes = [int,int,int,int]
+                            // [starhour,startmin,endhour,endmin]
+
+
+                            wD.startTimeHour = eventTimes[0];
+                            wD.startTimeMin = eventTimes[1];
+                            wD.endTimeHour = eventTimes[2];
+                            wD.endTimeMin = eventTimes[3];
+                            working = true;
                         }
+
                     }
                 }
-                System.out.println("--- new Week ---");
-                colI = 0;
+                colI = 0; // reset colI when row is completed
+            }
         }
+
+        // being finished, all events are collected, we write to file.
         cW.WriteToFile();
     }
 
-    /**
-     * Extracts the id from the file so that the naming of the file is automatically fixed.
-     * @param idString the string containing the id of the employee
-     * @return the id of the employee
-     */
-    private String extractId(String idString) {
-        String temp = idString.substring(12);
-        int i=0;
 
-        while(Character.isDigit(temp.charAt(i))) {
-            i++;
-        }
-        return idString.substring(12,12+i);
+    /**
+     * Parses the date which is formatted as "date/month" as numbers and returns a "pair" of integers, [day, month].
+     */
+    public int [] parsedate(String value) {
+        int[] date = new int [2];
+        String [] s = value.split("/");
+        date[0] = Integer.valueOf(s[0]);
+        date[1] = Integer.valueOf(s[1]);
+        return date;
     }
 
+
     /**
-     *
-     * @param times array formatted as [starthour, startmin, endhour, endmin].
-     * @param day the day the event should be created on, from 1-31.
-     * @param month the month the event should be created on.
-     * @param year the year the event should be created on (currently unused).
+     * Gives the work done to CalendarWriter, which creates a event and stores.
      * @throws SocketException
      */
-    private void createEvent(int[] times, int day, int month, int year) throws SocketException {
-        cW.eventCreator(eC.getTimes(day,month, times[0],times[1],times[2],times[3]));
+    private void createEvent(WorkDay workDay) throws SocketException {
+        cW.eventCreator(eC.getTimes(workDay));
     }
 
 
     /**
      * Given a string formatted as ICA_schema outputs an int array of size 4 with [starthour, startmin, endhour, endmin]
-     * Example, "15:00-23:45" outputs [15,0,23,45]
-     * @param str A string formatted as xx:xx-yy:yy
+     * Example, "15:00 - 23:45" outputs [15,0,23,45]
+     * @param str A string formatted as xx:xx - yy:yy
      * @return Returns an int array of size 4 with [starthour, startmin, endhour, endmin]
      */
-    private int [] ParseTimesIntoIntArray(String str) {
+    public int [] ParseTimesIntoIntArray(String str) {
 
-        // example: if str = "15:00-23:45"
+        // example: if str = "15:00 - 23:45"
         String start = str.substring(0,5); // "15:00"
-        String end = str.substring(6);     // "23:45"
+        String end = str.substring(8);     // "23:45"
 
         int starthour = Integer.valueOf(start.substring(0,2));  // 15
         int startmin  = Integer.valueOf(start.substring(3,5));  // 00
         int endhour   = Integer.valueOf(end.substring(0,2));    // 23
         int endmin    = Integer.valueOf(end.substring(3,5));    // 45
 
-                //      15       0        23      45
+        //      15       0        23      45
         int [] p = {starthour,startmin,endhour,endmin};
         return p;
     }

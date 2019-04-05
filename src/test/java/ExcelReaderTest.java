@@ -2,11 +2,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Reader2019Test {
+class ExcelReaderTest {
 
 
     WorkDay wD = new WorkDay();
-    Reader2019 eR = new Reader2019();
+    ExcelReader eR = new ExcelReader();
 
     @Test
     void parseDayOneDigit() {
@@ -55,8 +55,6 @@ class Reader2019Test {
         assertEquals(myArr[2], 14);
         assertEquals(myArr[3], 45);
     }
-
-
 
 
 }

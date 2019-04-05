@@ -1,3 +1,6 @@
+/**
+ * A class representing a workday with date and hours.
+ */
 public class WorkDay {
     int day;
     int month;
@@ -7,38 +10,6 @@ public class WorkDay {
     int startTimeMin;
     int endTimeHour;
     int endTimeMin;
-
-    public int getStartTimeMin() {
-        return startTimeMin;
-    }
-
-    public void setStartTimeMin(int startTimeMin) {
-        this.startTimeMin = startTimeMin;
-    }
-
-    public int getStartTimeHour() {
-        return startTimeHour;
-    }
-
-    public void setStartTimeHour(int startTimeHour) {
-        this.startTimeHour = startTimeHour;
-    }
-
-    public int getEndTimeMin() {
-        return endTimeMin;
-    }
-
-    public void setEndTimeMin(int endTimeMin) {
-        this.endTimeMin = endTimeMin;
-    }
-
-    public int getEndTimeHour() {
-        return endTimeHour;
-    }
-
-    public void setEndTimeHour(int endTimeHour) {
-        this.endTimeHour = endTimeHour;
-    }
 
     public WorkDay () {
         year = 2019;
@@ -55,29 +26,5 @@ public class WorkDay {
                 ", endTimeHour=" + endTimeHour +
                 ", endTimeMin=" + endTimeMin +
                 '}';
-    }
-
-    public int getDay() {
-        return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
-    }
-
-    public int getMonth() {
-        return month;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
     }
 }

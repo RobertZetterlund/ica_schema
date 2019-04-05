@@ -10,7 +10,6 @@ import net.fortuna.ical4j.util.MapTimeZoneCache;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.net.SocketException;
 import java.util.ArrayList;
 
@@ -57,13 +56,13 @@ public class CalendarWriter {
     }
 
     /**
-     * This function is called at the end of the process at the bottom of ExcelReader.
+     * This function is called at the end of the process at the bottom of Dated_ExcelReader.
      * It uses the eventList that has been created and uses a CalendarOutputter to create the file sommarchema.ics
      * @throws IOException
      */
     public void WriteToFile() throws IOException {
         net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
-        icsCalendar.getProperties().add(new ProdId("<- Ica Schema "+ExcelReader.id + " ->" ));
+        icsCalendar.getProperties().add(new ProdId("<- Ica Schema "+ Dated_ExcelReader.id + " ->" ));
         icsCalendar.getProperties().add(CalScale.GREGORIAN);
 
         // add the events
@@ -76,7 +75,7 @@ public class CalendarWriter {
         icsCalendar.getProperties().add(Version.VERSION_2_0);
 
         // generate a file that can be emailed using the globally available id in excelreader
-        FileOutputStream fout = new FileOutputStream("Examples/ " + Reader2019.id + "_sommarschema.ics" );
+        FileOutputStream fout = new FileOutputStream("Examples/ " + ExcelReader.id + "_sommarschema.ics" );
         CalendarOutputter outputter = new CalendarOutputter();
         outputter.output(icsCalendar, fout);
     }
