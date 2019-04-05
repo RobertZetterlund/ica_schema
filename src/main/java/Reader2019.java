@@ -4,7 +4,6 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Arrays;
 
 public class Reader2019 {
 
@@ -13,11 +12,11 @@ public class Reader2019 {
 
     // -----------------------------  END ADJUSTABLES  ----------------------------- //
 
-    int day = 0;
-    int month = 0;
-    String value;
 
-    static String id = "notfound";
+    String value;
+    Boolean working = false;
+
+    static String id = "test";
     private int rowI = 0;
     private int colI = 0;
     private EventCreator eC = new EventCreator();
@@ -32,6 +31,7 @@ public class Reader2019 {
 
         int[] eventTimes;
 
+
         Workbook workbook = WorkbookFactory.create(new File(schema_2019));
 
         // Retrieving the sheet in the Workbook
@@ -41,7 +41,7 @@ public class Reader2019 {
 
         for (Row row : sheet) {
             rowI++;
-            if (rowI == 6) {
+            if (rowI % 8 == 6) { //  (rowI % 8 == 6) the distance between the events are 8, and the first row is on index 6
                 for (Cell cell : row) {
                     colI++;
                     value = cell.getStringCellValue();
@@ -50,7 +50,12 @@ public class Reader2019 {
                             int[] date = parsedate(value);
                             wD.day = date[0];
                             wD.month = date[1];
-                            System.out.println(wD.toString());
+                            if(working) {
+                                System.out.println(wD.toString());
+                                createEvent(wD);
+                            }
+                            wD = new WorkDay();
+                            working = false;
                         }
                     } else {
                         if (value.contains(":")) {
@@ -59,23 +64,20 @@ public class Reader2019 {
                             // eventimes = [int,int,int,int]
                             // [starhour,startmin,endhour,endmin]
 
+
                             wD.startTimeHour = eventTimes[0];
                             wD.startTimeMin = eventTimes[1];
                             wD.endTimeHour = eventTimes[2];
                             wD.endTimeMin = eventTimes[3];
+                            working = true;
                         }
 
                     }
-
-
-//                    System.out.println("value: " + cell.getStringCellValue() + ", row = " + rowI + ", col = " + colI);
-
                 }
                 colI = 0;
             }
-
-            //  cW.WriteToFile();
         }
+        cW.WriteToFile();
     }
 
     public int [] parsedate(String value) {
@@ -88,15 +90,10 @@ public class Reader2019 {
 
 
     /**
-     *
-     * @param times array formatted as [starthour, startmin, endhour, endmin].
-     * @param day the day the event should be created on, from 1-31.
-     * @param month the month the event should be created on.
-     * @param year the year the event should be created on (currently unused).
      * @throws SocketException
      */
-    private void createEvent(int[] times, int day, int month, int year) throws SocketException {
-        cW.eventCreator(eC.getTimes(day,month, times[0],times[1],times[2],times[3]));
+    private void createEvent(WorkDay workDay) throws SocketException {
+        cW.eventCreator(eC.getTimes(workDay));
     }
 
 

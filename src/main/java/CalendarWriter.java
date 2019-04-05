@@ -10,6 +10,7 @@ import net.fortuna.ical4j.util.MapTimeZoneCache;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.SocketException;
 import java.util.ArrayList;
 
@@ -75,7 +76,7 @@ public class CalendarWriter {
         icsCalendar.getProperties().add(Version.VERSION_2_0);
 
         // generate a file that can be emailed using the globally available id in excelreader
-        FileOutputStream fout = new FileOutputStream(ExcelReader.id + "_sommarschema.ics" );
+        FileOutputStream fout = new FileOutputStream("Examples/ " + Reader2019.id + "_sommarschema.ics" );
         CalendarOutputter outputter = new CalendarOutputter();
         outputter.output(icsCalendar, fout);
     }
