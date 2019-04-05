@@ -5,24 +5,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 
-public class ExcelReader {
+public class Reader2019 {
 
     // ----------------------------- START ADJUSTABLES ----------------------------- //
-    private static final String schema_r = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_sommar.xls";
-    private static final String schema_w = "/Users/robertzetterlund/ica_schema/src/main/resources/6781_vinter.xls";
-    private static final String schema_m = "/Users/robertzetterlund/ica_schema/src/main/resources/31706_sommar.xls";
     private static final String schema_2019 = "/Users/robertzetterlund/Projects_prog/ica_schema/src/main/resources/Schema-Testschema.xlsx";
 
-
-
-    private int day = 10; // Dagen då sommarschemat börjar
-    private int month = 6; // Månaden då sommarschemat börjar
-    private int year = 2019; // Året sommarschemat börjar
-
-    private int daysOfJuny = 30;
-    private int daysOfJuly = 31;
     // -----------------------------  END ADJUSTABLES  ----------------------------- //
 
+    int day = 0;
+    int month = 0;
+    String value;
 
     static String id = "notfound";
     private int rowI = 0;
@@ -31,7 +23,7 @@ public class ExcelReader {
     private CalendarWriter cW = new CalendarWriter();
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
-        ExcelReader eR = new ExcelReader();
+        Reader2019 eR = new Reader2019();
         eR.app();
     }
 
@@ -39,46 +31,46 @@ public class ExcelReader {
 
         int[] eventTimes;
 
-        // Creating a Workbook from an Excel file (.xls)
-        Workbook workbook = WorkbookFactory.create(new File(schema_r));
+        Workbook workbook = WorkbookFactory.create(new File(schema_2019));
 
         // Retrieving the sheet in the Workbook
         Sheet sheet = workbook.getSheetAt(0);
 
-        // for-each loop to iterate over the rows and columns
         for (Row row : sheet) {
             rowI++;
+            if(rowI == 6) {
                 for (Cell cell : row) {
                     colI++;
-                    if (colI == 1 && rowI == 1) {
-                         id = extractId(cell.getStringCellValue());
-                    }
-                    if (rowI > 2) {
-                        if (colI > 1 && colI < 9) { // between column-indices 1 and 9 lies the data, monday through sunday.
-                            String str = cell.getStringCellValue();
-
-                            if (str.contains(":") && rowI > 2) { // time is formatted as XX:xx-YY:yy.
-                                eventTimes = ParseTimesIntoIntArray(str);
-                                createEvent(eventTimes, day, month, year);
-                            }
-
-                            System.out.println(cell.getStringCellValue() + " day: " + day + ". Month: " + month);
-                            day++;
+                    if(colI%2 == 0 ) {
+                        value = cell.getStringCellValue();
+                        if(!cell.getStringCellValue().equals("")) {
+                            WorkDay wD = new WorkDay();
+                            int[] date = parsedate(value);
+                            wD.day = date[0];
+                            wD.month = date[1];
                         }
-                        if (day == daysOfJuny + 1 && month == 6) {
-                            month = 7;
-                            day = 1;
-                        } else if (day == daysOfJuly + 1 && month == 7) {
-                            month = 8;
-                            day = 1;
-                        }
+                    } else {
+                       // System.out.println(cell.getStringCellValue());
                     }
+
+
+//                    System.out.println("value: " + cell.getStringCellValue() + ", row = " + rowI + ", col = " + colI);
                 }
-                System.out.println("--- new Week ---");
-                colI = 0;
+            }
+            colI = 0;
         }
-        cW.WriteToFile();
+
+      //  cW.WriteToFile();
     }
+
+    public int [] parsedate(String value) {
+        int[] date = new int [2];
+        String [] s = value.split("/");
+        date[0] = Integer.valueOf(s[0]);
+        date[1] = Integer.valueOf(s[1]);
+        return date;
+    }
+
 
     /**
      * Extracts the id from the file so that the naming of the file is automatically fixed.
@@ -125,7 +117,7 @@ public class ExcelReader {
         int endhour   = Integer.valueOf(end.substring(0,2));    // 23
         int endmin    = Integer.valueOf(end.substring(3,5));    // 45
 
-                //      15       0        23      45
+        //      15       0        23      45
         int [] p = {starthour,startmin,endhour,endmin};
         return p;
     }
