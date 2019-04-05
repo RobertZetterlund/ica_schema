@@ -3,9 +3,42 @@ public class WorkDay {
     int month;
     int year;
 
-    int startTime;
-    int endTime;
+    int startTimeHour;
+    int startTimeMin;
+    int endTimeHour;
+    int endTimeMin;
 
+    public int getStartTimeMin() {
+        return startTimeMin;
+    }
+
+    public void setStartTimeMin(int startTimeMin) {
+        this.startTimeMin = startTimeMin;
+    }
+
+    public int getStartTimeHour() {
+        return startTimeHour;
+    }
+
+    public void setStartTimeHour(int startTimeHour) {
+        this.startTimeHour = startTimeHour;
+    }
+
+    public int getEndTimeMin() {
+        return endTimeMin;
+    }
+
+    public void setEndTimeMin(int endTimeMin) {
+        this.endTimeMin = endTimeMin;
+    }
+
+    public int getEndTimeHour() {
+        return endTimeHour;
+    }
+
+    public void setEndTimeHour(int endTimeHour) {
+        this.endTimeHour = endTimeHour;
+    }
 
     public WorkDay () {
         year = 2019;
@@ -17,8 +50,10 @@ public class WorkDay {
                 "day=" + day +
                 ", month=" + month +
                 ", year=" + year +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                ", startTimeHour=" + startTimeHour +
+                ", startTimeMin=" + startTimeMin +
+                ", endTimeHour=" + endTimeHour +
+                ", endTimeMin=" + endTimeMin +
                 '}';
     }
 
@@ -44,21 +79,5 @@ public class WorkDay {
 
     public void setYear(int year) {
         this.year = year;
-    }
-
-    public int getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(int startTime) {
-        this.startTime = startTime;
-    }
-
-    public int getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(int endTime) {
-        this.endTime = endTime;
     }
 }

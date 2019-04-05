@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Arrays;
 
 public class Reader2019 {
 
@@ -36,31 +37,45 @@ public class Reader2019 {
         // Retrieving the sheet in the Workbook
         Sheet sheet = workbook.getSheetAt(0);
 
+        WorkDay wD = new WorkDay();
+
         for (Row row : sheet) {
             rowI++;
-            if(rowI == 6) {
+            if (rowI == 6) {
                 for (Cell cell : row) {
                     colI++;
-                    if(colI%2 == 0 ) {
-                        value = cell.getStringCellValue();
-                        if(!cell.getStringCellValue().equals("")) {
-                            WorkDay wD = new WorkDay();
+                    value = cell.getStringCellValue();
+                    if (colI % 2 == 0) {
+                        if (!cell.getStringCellValue().equals("")) {
                             int[] date = parsedate(value);
                             wD.day = date[0];
                             wD.month = date[1];
+                            System.out.println(wD.toString());
                         }
                     } else {
-                       // System.out.println(cell.getStringCellValue());
+                        if (value.contains(":")) {
+
+                            eventTimes = ParseTimesIntoIntArray(value);
+                            // eventimes = [int,int,int,int]
+                            // [starhour,startmin,endhour,endmin]
+
+                            wD.startTimeHour = eventTimes[0];
+                            wD.startTimeMin = eventTimes[1];
+                            wD.endTimeHour = eventTimes[2];
+                            wD.endTimeMin = eventTimes[3];
+                        }
+
                     }
 
 
 //                    System.out.println("value: " + cell.getStringCellValue() + ", row = " + rowI + ", col = " + colI);
-                }
-            }
-            colI = 0;
-        }
 
-      //  cW.WriteToFile();
+                }
+                colI = 0;
+            }
+
+            //  cW.WriteToFile();
+        }
     }
 
     public int [] parsedate(String value) {
@@ -71,21 +86,6 @@ public class Reader2019 {
         return date;
     }
 
-
-    /**
-     * Extracts the id from the file so that the naming of the file is automatically fixed.
-     * @param idString the string containing the id of the employee
-     * @return the id of the employee
-     */
-    private String extractId(String idString) {
-        String temp = idString.substring(12);
-        int i=0;
-
-        while(Character.isDigit(temp.charAt(i))) {
-            i++;
-        }
-        return idString.substring(12,12+i);
-    }
 
     /**
      *
@@ -106,11 +106,11 @@ public class Reader2019 {
      * @param str A string formatted as xx:xx-yy:yy
      * @return Returns an int array of size 4 with [starthour, startmin, endhour, endmin]
      */
-    private int [] ParseTimesIntoIntArray(String str) {
+    public int [] ParseTimesIntoIntArray(String str) {
 
-        // example: if str = "15:00-23:45"
+        // example: if str = "15:00 - 23:45"
         String start = str.substring(0,5); // "15:00"
-        String end = str.substring(6);     // "23:45"
+        String end = str.substring(8);     // "23:45"
 
         int starthour = Integer.valueOf(start.substring(0,2));  // 15
         int startmin  = Integer.valueOf(start.substring(3,5));  // 00

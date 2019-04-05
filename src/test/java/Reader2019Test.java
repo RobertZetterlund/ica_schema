@@ -32,6 +32,29 @@ class Reader2019Test {
         assertEquals(4, wD.month);
     }
 
+    @Test
+    void parseWorkTimes1() {
+
+        int[] myArr = eR.ParseTimesIntoIntArray("15:00 - 23:45");
+
+        assertEquals(myArr[0], 15);
+        assertEquals(myArr[1], 0);
+
+        assertEquals(myArr[2], 23);
+        assertEquals(myArr[3], 45);
+    }
+
+    @Test
+    void parseWorkTimes2() {
+
+        int[] myArr = eR.ParseTimesIntoIntArray("06:00 - 14:45");
+
+        assertEquals(myArr[0], 6);
+        assertEquals(myArr[1], 0);
+
+        assertEquals(myArr[2], 14);
+        assertEquals(myArr[3], 45);
+    }
 
 
 
